@@ -1,8 +1,17 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, url_for, redirect
 from pymongo import MongoClient
 import json
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
+app.config.from_prefixed_env('MYAPP')
+client = MongoClient('localhost', 27017)
+db = client.flask_db
+arcitles = db.articles
+                                     
+
+
 employees = [
     {"id": 1, "name": "Ashley"},
     {"id": 2, "name": "Kate"},
@@ -12,7 +21,9 @@ nextEmployeeId = 4
 # client = MongoClient("mongodb://localhost:27017/")
 # db = client["mydatabase"]
 # users_collection = db["users"]
-
+@app.route('/', methods=('GET', 'POST'))
+def index():
+    return render_template('index.html')
 
 @app.route("/employees", methods=["GET"])
 def get_employees():
