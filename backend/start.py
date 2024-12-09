@@ -16,10 +16,14 @@ db = client["blog"]
 users_collection = db["posts"]
 
 
-@app.route("/", methods=("GET", "POST"))
-def index():
-    posts = list(users_collection.find({}, {"_id": 0, "title": 1, "content": 1}))
-    return jsonify(posts)
+@app.route("/<url>", methods=["GET"])
+def get_post(url):
+    post = users_collection.find_one({"url": url}, {"_id": 0, "title": 1, "content": 1})
+
+    if not post:
+        return jsonify({"error": "Post not found"}), 404
+
+    return jsonify(post)
 
 
 if __name__ == "__main__":
