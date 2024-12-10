@@ -2,6 +2,9 @@ from flask import Flask, jsonify, request, render_template, url_for, redirect
 from pymongo import MongoClient
 import json
 from dotenv import load_dotenv
+from flask_cors import CORS
+
+CORS(app)
 
 load_dotenv()
 app = Flask(__name__)
@@ -14,6 +17,12 @@ arcitles = db.articles
 client = MongoClient("mongodb://localhost:27017/")
 db = client["blog"]
 users_collection = db["posts"]
+
+
+@app.route("/titles", methods=["GET"])
+def get_titles():
+    titles = list(users_collection.find({}, {"_id": 0, "title": 1}))
+    return jsonify(titles)
 
 
 @app.route("/<url>", methods=["GET"])
