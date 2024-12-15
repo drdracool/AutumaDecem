@@ -1,27 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Home from "./components/Home";
+import Post from "./components/Post";
 
 function App() {
-  const [titles, setTitles] = useState([]);
-  useEffect(() => {
-    fetch("/titles").then((res) =>
-      res.json().then((data) => {
-        setTitles(data);
-      })
-    );
-  }, []);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Titles</h1>
-        <ul>
-          {titles.map((item, index) => {
-            <li key={index}>{item.title}</li>;
-          })}
-        </ul>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/post/:slug" element={<Post />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -4,10 +4,10 @@ import json
 from dotenv import load_dotenv
 from flask_cors import CORS
 
-CORS(app)
 
 load_dotenv()
 app = Flask(__name__)
+CORS(app)
 # app.config.from_prefixed_env("MYAPP")
 client = MongoClient("localhost", 27017)
 db = client.flask_db
@@ -21,13 +21,15 @@ users_collection = db["posts"]
 
 @app.route("/titles", methods=["GET"])
 def get_titles():
-    titles = list(users_collection.find({}, {"_id": 0, "title": 1}))
+    titles = list(users_collection.find({}, {"_id": 0, "title": 1, "slug": 1}))
     return jsonify(titles)
 
 
-@app.route("/<url>", methods=["GET"])
-def get_post(url):
-    post = users_collection.find_one({"url": url}, {"_id": 0, "title": 1, "content": 1})
+@app.route("/post/<slug>", methods=["GET"])
+def get_post(slug):
+    post = users_collection.find_one(
+        {"slug": slug}, {"_id": 0, "title": 1, "content": 1}
+    )
 
     if not post:
         return jsonify({"error": "Post not found"}), 404
