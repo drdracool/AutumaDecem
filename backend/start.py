@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import json
 from dotenv import load_dotenv
 from flask_cors import CORS
+from bson import ObjectId
 
 
 load_dotenv()
@@ -16,25 +17,33 @@ arcitles = db.articles
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["blog"]
-users_collection = db["posts"]
+posts_collection = db["posts"]
+comments_collection = db["comments"]
 
 
 @app.route("/titles", methods=["GET"])
 def get_titles():
-    titles = list(users_collection.find({}, {"_id": 0, "title": 1, "slug": 1}))
+    titles = list(posts_collection.find({}, {"_id": 0, "title": 1, "slug": 1}))
     return jsonify(titles)
 
 
 @app.route("/post/<slug>", methods=["GET"])
 def get_post(slug):
-    post = users_collection.find_one(
-        {"slug": slug}, {"_id": 0, "title": 1, "content": 1}
+    post = posts_collection.find_one(
+        {"slug": slug}, {"_id": 1, "title": 1, "content": 1}
     )
 
     if not post:
         return jsonify({"error": "Post not found"}), 404
 
-    return jsonify(post)
+    postId = post["_id"]
+    del post["_id"]
+
+    comments = list(
+        comments_collection.find({"postId": ObjectId(postId)}, {"_id": 0, "content": 1})
+    )
+
+    return jsonify(post, comments)
 
 
 if __name__ == "__main__":
