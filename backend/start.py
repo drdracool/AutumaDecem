@@ -43,7 +43,7 @@ def get_post(slug):
         comments_collection.find({"postId": ObjectId(postId)}, {"_id": 0, "content": 1})
     )
 
-    return jsonify(post, comments)
+    return jsonify({"post": post, "comments": comments})
 
 
 if __name__ == "__main__":
