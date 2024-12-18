@@ -46,5 +46,28 @@ def get_post(slug):
     return jsonify({"post": post, "comments": comments})
 
 
+@app.route("/post/<slug>/comment", methods=["POST"])
+def add_comment(slug):
+    data = request.get_json()
+    username = data.get("username")
+    content = data.get("content")
+
+    if not username or not content:
+        return jsonify({"error": "Username and content are required"}), 400
+
+    post = posts_collection.find_one({"slug": slug}, {"_id": 1})
+    if not post:
+        return jsonify({"error": "Post not found"}), 404
+
+    new_comment = {
+        "postId": ObjectId(post["_id"]),
+        "username": username,
+        "content": content,
+    }
+
+    comments_collection.insert_one(new_comment)
+    return jsonify({"message": "Comment added successfully"}), 201
+
+
 if __name__ == "__main__":
     app.run(port=5000)
