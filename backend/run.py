@@ -1,15 +1,16 @@
-from mflix.factory import create_app
+from flask import Flask
 
-import os
-import configparser
+from dotenv import load_dotenv
+from flask_cors import CORS
+from routes import register_routes
 
 
-config = configparser.ConfigParser()
-config.read(os.path.abspath(os.path.join(".ini")))
+load_dotenv()
+
+app = Flask(__name__)
+CORS(app)
+
+register_routes(app)
 
 if __name__ == "__main__":
-    app = create_app()
-    app.config['DEBUG'] = True
-    app.config['MONGO_URI'] = config['PROD']['DB_URI']
-
-    app.run()
+    app.run(port=5000)
