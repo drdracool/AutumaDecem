@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { data, useParams } from "react-router-dom";
 import CommentList from "./CommentList";
 import CommentForm from "./CommentForm";
 

@@ -2,6 +2,7 @@ import os
 import requests
 import mimetypes
 from flask import Blueprint, request, jsonify, send_from_directory
+from bs4 import BeautifulSoup
 
 image_bp = Blueprint("image", __name__)
 IMAGE_DIR = "static/images"
