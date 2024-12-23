@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CommentList from "./CommentList";
 import CommentForm from "./CommentForm";
 
@@ -13,30 +13,25 @@ function Post() {
       .then((res) => res.json())
       .then((data) => {
         setPostData(data);
+        if (contentRef.current) {
+          const images = contentRef.current.querySelectorAll("img[src]");
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                img.setAttribute("referrerpolicy", "no-referrer"); // 设置 referrerpolicy 以避免微信反盗链
+                observer.unobserve(img);
+              }
+            });
+          });
+
+          images.forEach((img) => observer.observe(img));
+
+          return () => observer.disconnect();
+        }
       })
       .catch((error) => console.error("Error fetching post:", error));
   }, [slug]);
-
-  useEffect(() => {
-    if (contentRef.current) {
-      const images = document.querySelectorAll("img");
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const img = entry.target;
-            const dataSrc = img.getAttribute("data-src");
-            if (dataSrc) {
-              img.setAttribute("src", dataSrc); //set the src property of images dynamically
-              img.setAttribute("referrerpolicy", "no-referrer"); // set referrerpolicy to avoid WECHAT anti-theft chain
-              observer.unobserve(img);
-            }
-          }
-        });
-      });
-      images.forEach((img) => observer.observe(img));
-      return () => observer.disconnect();
-    }
-  }, [postData]);
 
   const handleCommentSubmit = (comment) => {
     fetch(`/post/${slug}/comment`, {
@@ -72,13 +67,12 @@ function Post() {
 
   const { post, comments } = postData;
 
-  //convert html json data to actual html using dangerouslySetInnerHTML
   return (
     <div>
       <h1>{post.title}</h1>
       <div
         ref={contentRef}
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: post.content }} //convert html json data to actual html using dangerouslySetInnerHTML
         style={{ textAlign: "justify" }}
       />
       <p>{post.content}</p>
