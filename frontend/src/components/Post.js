@@ -19,8 +19,7 @@ function Post() {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
                 const img = entry.target;
-                img.setAttribute("referrerpolicy", "no-referrer"); // 设置 referrerpolicy 以避免微信反盗链
-                observer.unobserve(img);
+                img.setAttribute("referrerpolicy", "no-referrer"); // set refferer policy to avoid wechat anti theft chain
               }
             });
           });
@@ -75,7 +74,6 @@ function Post() {
         dangerouslySetInnerHTML={{ __html: post.content }} //convert html json data to actual html using dangerouslySetInnerHTML
         style={{ textAlign: "justify" }}
       />
-      <p>{post.content}</p>
       <CommentList comments={comments} />
       <CommentForm onCommentSubmit={handleCommentSubmit} />
     </div>
