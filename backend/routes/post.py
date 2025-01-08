@@ -57,10 +57,11 @@ def get_post(slug):
         print(f"Image tag: {img}")
         data_src = img.get("data-src")
         if data_src:
-            filepath = process_image(data_src, IMAGE_DIR)
-            if filepath:
+            filename = process_image(data_src, IMAGE_DIR)
+            if filename:
                 # path separator compatibility & root-relative path
-                img["src"] = f"/{filepath.replace(os.sep, '/')}"
+                img["src"] = f"/image/{filename}"
+                img["loading"] = "lazy"
             else:
                 img["src"] = ""
 
@@ -76,6 +77,7 @@ def get_post(slug):
 def process_image(url, save_dir):
     global existing_images
     cleaned_url = re.sub(r"^[\"\\]+|[\"\\]+$", "", url)
+
     # Generate a unique filename using a hash
     hash_object = hashlib.md5(cleaned_url.encode("utf-8"))
     hash_hex = hash_object.hexdigest()
@@ -83,8 +85,9 @@ def process_image(url, save_dir):
 
     if filename in existing_images:
         print(f"Image already exists: {filename}")
-        return os.path.join(save_dir, filename)
+        return filename
 
+    # Download if the image does not exist
     try:
         response = requests.get(cleaned_url, timeout=5)
         response.raise_for_status()
@@ -96,7 +99,7 @@ def process_image(url, save_dir):
 
         existing_images.add(filename)
         print(f"Image downloaded and saved: {filename}")
-        return filepath
+        return filename
 
     except requests.RequestException as e:
         print(f"Failed to download image from {url}: {e}")
