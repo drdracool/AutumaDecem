@@ -13,21 +13,6 @@ function Post() {
       .then((res) => res.json())
       .then((data) => {
         setPostData(data);
-        if (contentRef.current) {
-          const images = contentRef.current.querySelectorAll("img[src]");
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                const img = entry.target;
-                img.setAttribute("referrerpolicy", "no-referrer"); // set refferer policy to avoid wechat anti theft chain
-              }
-            });
-          });
-
-          images.forEach((img) => observer.observe(img));
-
-          return () => observer.disconnect();
-        }
       })
       .catch((error) => console.error("Error fetching post:", error));
   }, [slug]);
