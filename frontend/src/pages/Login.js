@@ -1,11 +1,43 @@
 import React from "react";
 
 const Login = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const remember = e.target.remember.checked;
+
+    try {
+      // Send a POST request to the /login endpoint with the user's information
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, remember }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response from server:", errorText);
+        alert("Login failed. Please try again.");
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Login successful:", result);
+      alert(result.message);
+    } catch (err) {
+      console.error("Error logging in", err);
+      alert("An unexpected error occurred.");
+    }
+  };
+
   return (
     <div>
       <h3>Login</h3>
       <div>
-        <form method="POST" action="/login">
+        <form onSubmit={handleSubmit}>
           {/* useActionState is used to update state based on the result of a form action. */}
           <div>
             <div>

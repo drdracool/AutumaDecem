@@ -3,6 +3,7 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_cors import CORS
 from routes import register_routes
+from extensions import db
 
 
 load_dotenv()

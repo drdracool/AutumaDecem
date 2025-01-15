@@ -1,11 +1,38 @@
 import React from "react";
 
 const Signup = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const username = e.target.username.value;
+
+    try {
+      const response = await fetch("/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, username }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+      } else {
+        const error = await response.json();
+        alert(error.error);
+      }
+    } catch (err) {
+      console.error("Error signing up", err);
+    }
+  };
+
   return (
     <div>
       <h3>Sign up</h3>
       <div>
-        <form method="POST" action="/signup">
+        <form onSubmit={handleSubmit}>
           <div>
             <div>
               <input
