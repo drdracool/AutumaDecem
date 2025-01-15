@@ -5,12 +5,10 @@ users_collection = db["users"]
 
 
 class User:
-    def __init__(self, username, email, password=None, password_hash=None):
+    def __init__(self, username, email, password_hash=None):
         self.username = username
         self.email = email
-        self.password_hash = password_hash or (
-            generate_password_hash(password) if password else None
-        )
+        self.password_hash = password_hash
 
     def save_to_db(self):
         try:

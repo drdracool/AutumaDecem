@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from models.user import User
+from werkzeug.security import generate_password_hash
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -40,7 +41,9 @@ def signup():
     if User.find_by_email(email):
         return jsonify({"error": "User already exists"}), 400
 
-    new_user = User(username=username, email=email, password=password)
+    new_user = User(
+        username=username, email=email, password_hash=generate_password_hash(password)
+    )
     new_user.save_to_db()
     return jsonify({"message": "User registrated successfully"}), 201
     # return redirect(url_for("auth.login"))
