@@ -1,6 +1,10 @@
+import { useState } from "react";
 import React from "react";
 
 const Signup = () => {
+  const [notification, setNotification] = useState(null);
+  const [notificationType, setNotificationType] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -17,20 +21,38 @@ const Signup = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
+        setNotification("Registration successful! Please log in.");
+        setNotificationType("success");
+        e.target.reset();
       } else {
         const error = await response.json();
-        alert(error.error);
+        setNotification(error.error || "An error occurred.");
+        setNotificationType("error");
       }
     } catch (err) {
       console.error("Error signing up", err);
+      setNotification("An unexpected error occurred.");
+      setNotificationType("error");
     }
+
+    // setTimeout(() => {
+    //   setNotification(null);
+    //   setNotificationType("");
+    // }, 5000);
   };
 
   return (
     <div>
       <h3>Sign up</h3>
+      {notification && (
+        <div
+          className={`flash-message ${
+            notificationType === "success" ? "flash-success" : "flash-error"
+          }`}
+        >
+          {notification}
+        </div>
+      )}
       <div>
         <form onSubmit={handleSubmit}>
           <div>

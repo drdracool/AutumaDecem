@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, url_for
+from flask import Blueprint, request, jsonify, redirect, url_for, flash
 from models.user import User
 from werkzeug.security import generate_password_hash
 
@@ -45,8 +45,7 @@ def signup():
         username=username, email=email, password_hash=generate_password_hash(password)
     )
     new_user.save_to_db()
-    return jsonify({"message": "User registrated successfully"}), 201
-    # return redirect(url_for("auth.login"))
+    return redirect(url_for("auth_bp.login"))
 
 
 @auth_bp.route("/logout")
