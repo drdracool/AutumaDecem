@@ -1,6 +1,15 @@
 from flask import Blueprint, request, jsonify, redirect, url_for, flash
 from models.user import User
 from werkzeug.security import generate_password_hash
+from datetime import datetime, timedelta, timezone
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt,
+    get_jwt_identity,
+    unset_jwt_cookies,
+    jwt_required,
+    JWTManager,
+)
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -25,7 +34,11 @@ def login():
             return jsonify({"error": "Invalid username or password"}), 401
 
         print("Login successful.")
-        return jsonify({"message": "Login successful"}), 200
+        # Generate access token valid for an hour
+        access_token = create_access_token(
+            identity=email, expires_delta=timedelta(hours=1)
+        )
+        return jsonify({"token": access_token}), 200
     except Exception as e:
         print(f"Error in login: {e}")
         return jsonify({"error": "An error occurred during login"}), 500
@@ -50,4 +63,6 @@ def signup():
 
 @auth_bp.route("/logout")
 def logout():
-    return "Logout"
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
