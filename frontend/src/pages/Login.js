@@ -24,9 +24,9 @@ const Login = () => {
         return;
       }
 
-      const result = await response.json();
-      console.log("Login successful:", result);
-      alert(result.message);
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      alert("Login successful!");
     } catch (err) {
       console.error("Error logging in", err);
       alert("An unexpected error occurred.");
