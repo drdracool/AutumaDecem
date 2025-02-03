@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./LoginModal.css";
 
 const LoginModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
