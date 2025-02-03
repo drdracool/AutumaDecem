@@ -28,7 +28,7 @@ const LoginModal = ({ onClose, onLogin }) => {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userName", data.username);
+      localStorage.setItem("username", data.username);
       onLogin(data.username);
       onClose();
     } catch (err) {
