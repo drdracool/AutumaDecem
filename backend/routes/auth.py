@@ -25,7 +25,7 @@ def login():
         user = User.find_by_email(email)
         if not user:
             print("User not found.")
-            return jsonify({"error": "Invalid username or password"}), 401
+            return jsonify({"error": "User not found"}), 401
 
         print(f"User found: {user.email}")
 
@@ -38,7 +38,7 @@ def login():
         access_token = create_access_token(
             identity=email, expires_delta=timedelta(hours=1)
         )
-        return jsonify({"token": access_token}), 200
+        return jsonify({"token": access_token, "username": user.username}), 200
     except Exception as e:
         print(f"Error in login: {e}")
         return jsonify({"error": "An error occurred during login"}), 500

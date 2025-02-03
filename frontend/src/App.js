@@ -4,7 +4,7 @@ import "./App.css";
 import Home from "./components/Home";
 import Post from "./components/Post";
 import Header from "./components/Header";
-import Login from "./pages/Login";
+import Login from "./components/LoginModal";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 
