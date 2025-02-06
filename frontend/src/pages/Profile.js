@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../components/AuthContext";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useContext(AuthContext);
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!isLoggedIn) {
       navigate("/login");
       return;
     }
 
     const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
       if (!token) {
         setError("No token found. Please login first.");
         setLoading(false);
@@ -34,6 +36,7 @@ const Profile = () => {
           setProfileData(data);
         } else {
           localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           navigate("/login");
         }
       } catch (err) {
@@ -45,7 +48,7 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, [navigate]);
+  }, [isLoggedIn, navigate]);
 
   if (loading) return <h2>Loading profile...</h2>;
   if (error) return <h2>Error: {error}</h2>;

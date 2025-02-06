@@ -1,30 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import LoginModal from "./LoginModal";
+import { AuthContext } from "./AuthContext";
 import "./Header.css";
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  const { isLoggedIn, userName, logout } = useContext(AuthContext);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("username");
-
-    if (token && storedUser) {
-      setIsLoggedIn(true);
-      setUserName(storedUser);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    setIsLoggedIn(false);
-    setUserName("");
-    window.location.href = "/";
-  };
+  console.log("Header - isLoggedIn:", isLoggedIn);
+  console.log("Header - userName:", userName);
 
   return (
     <header>
@@ -39,7 +24,7 @@ const Header = () => {
                 <Link to="/profile">{userName}</Link>
               </li>
               <li>
-                <button onClick={handleLogout}>Logout</button>
+                <button onClick={logout}>Logout</button>
               </li>
             </>
           ) : (
@@ -55,13 +40,7 @@ const Header = () => {
         </ul>
       </nav>
       {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onLogin={(name) => {
-            setIsLoggedIn(true);
-            setUserName(name);
-          }}
-        />
+        <LoginModal onClose={() => setShowLoginModal(false)} />
       )}
     </header>
   );

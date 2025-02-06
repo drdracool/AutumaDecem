@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./LoginModal.css";
+import { AuthContext } from "./AuthContext";
 
 const LoginModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [remember, setRemember] = useState(false);
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ const LoginModal = ({ onClose, onLogin }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, remember }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -27,9 +29,7 @@ const LoginModal = ({ onClose, onLogin }) => {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("username", data.username);
-      onLogin(data.username);
+      login(data.token, remember);
       onClose();
     } catch (err) {
       setError("Error logging in");
@@ -66,7 +66,12 @@ const LoginModal = ({ onClose, onLogin }) => {
 
           <div>
             <label className="checkbox">
-              <input type="checkbox" name="remember" />
+              <input
+                type="checkbox"
+                name="remember"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
               Remember me
             </label>
           </div>

@@ -20,6 +20,7 @@ def login():
         data = request.json
         email = data.get("email")
         password = data.get("password")
+        remember = data.get("remember", False)
         print(f"Login attempt with email: {email}")
 
         user = User.find_by_email(email)
@@ -35,10 +36,12 @@ def login():
 
         print("Login successful.")
         # Generate access token valid for an hour
+        expires = timedelta(days=30) if remember else timedelta(hours=1)
         access_token = create_access_token(
-            identity=email, expires_delta=timedelta(hours=1)
+            expires_delta=expires,
+            identity={"email": user.email, "username": user.username},
         )
-        return jsonify({"token": access_token, "username": user.username}), 200
+        return jsonify({"token": access_token}), 200
     except Exception as e:
         print(f"Error in login: {e}")
         return jsonify({"error": "An error occurred during login"}), 500
