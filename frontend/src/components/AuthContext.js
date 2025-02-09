@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const decoded = jwtDecode(token);
       setIsLoggedIn(true);
-      setUserName(decoded.sub.username);
+      setUserName(decoded.username);
       if (rememberMe) {
         localStorage.setItem("token", token);
       } else {
