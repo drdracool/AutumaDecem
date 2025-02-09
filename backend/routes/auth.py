@@ -39,7 +39,8 @@ def login():
         expires = timedelta(days=30) if remember else timedelta(hours=1)
         access_token = create_access_token(
             expires_delta=expires,
-            identity={"email": user.email, "username": user.username},
+            identity=user.email,
+            additional_claims={"username": user.username},
         )
         return jsonify({"token": access_token}), 200
     except Exception as e:

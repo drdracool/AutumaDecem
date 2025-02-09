@@ -6,24 +6,17 @@ const Profile = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthContext);
   const [profileData, setProfileData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login");
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!token) {
+      setError("You need to log in to view this page. Please login first.");
       return;
     }
 
     const fetchProfile = async () => {
-      const token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please login first.");
-        setLoading(false);
-        return;
-      }
-
       try {
         const response = await fetch("/profile", {
           headers: {
@@ -37,25 +30,23 @@ const Profile = () => {
         } else {
           localStorage.removeItem("token");
           sessionStorage.removeItem("token");
-          navigate("/login");
+          setError("No token found. Please login first.");
         }
       } catch (err) {
         console.error("Error fetching profile:", error);
         setError("An error occurred while fetching profile data.");
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchProfile();
   }, [isLoggedIn, navigate]);
 
-  if (loading) return <h2>Loading profile...</h2>;
+  if (!profileData) return <h2>Loading profile...</h2>;
   if (error) return <h2>Error: {error}</h2>;
 
   return (
     <div>
-      <h1>Welcome! {profileData.name}</h1>
+      <h1>Welcome! {profileData?.name || "User"}</h1>
     </div>
   );
 };

@@ -15,8 +15,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const decoded = jwtDecode(token);
         setIsLoggedIn(true);
-        // Username is stored in decoded.sub not decoded
-        setUserName(decoded.sub.username);
+        setUserName(decoded.username);
       } catch (error) {
         console.error("Invalid token:", error);
       }

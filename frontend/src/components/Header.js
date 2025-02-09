@@ -8,9 +8,6 @@ const Header = () => {
   const { isLoggedIn, userName, logout } = useContext(AuthContext);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  console.log("Header - isLoggedIn:", isLoggedIn);
-  console.log("Header - userName:", userName);
-
   return (
     <header>
       <nav>
