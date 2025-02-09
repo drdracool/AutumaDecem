@@ -46,7 +46,7 @@ const Profile = () => {
 
   return (
     <div>
-      <h1>Welcome! {profileData?.name || "User"}</h1>
+      <h1>Welcome! {profileData?.username || "User"}</h1>
     </div>
   );
 };

@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem("token");
     setIsLoggedIn(false);
     setUserName("");
-    window.location.href = "/";
   };
 
   return (

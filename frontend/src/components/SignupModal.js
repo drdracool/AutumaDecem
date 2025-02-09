@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import "./Modal.css";
 import { AuthContext } from "./AuthContext";
 
-const LoginModal = ({ onClose, onLogin }) => {
+const SignupModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -39,7 +39,7 @@ const LoginModal = ({ onClose, onLogin }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h3>Login</h3>
+        <h3>Sign Up</h3>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
           {/* useActionState is used to update state based on the result of a form action. */}
@@ -85,4 +85,4 @@ const LoginModal = ({ onClose, onLogin }) => {
   );
 };
 
-export default LoginModal;
+export default SignupModal;
