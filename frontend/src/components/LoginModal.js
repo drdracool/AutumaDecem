@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import "./Modal.css";
 import { AuthContext } from "./AuthContext";
 
-const LoginModal = ({ onClose, onLogin }) => {
+const LoginModal = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

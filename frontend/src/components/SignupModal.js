@@ -4,22 +4,21 @@ import { AuthContext } from "./AuthContext";
 
 const SignupModal = ({ onClose, onLogin }) => {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [remember, setRemember] = useState(false);
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Send a POST request to the /login endpoint with the user's information
-      const response = await fetch("/login", {
+      const response = await fetch("/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, username, password }),
       });
 
       if (!response.ok) {
@@ -29,10 +28,11 @@ const SignupModal = ({ onClose, onLogin }) => {
       }
 
       const data = await response.json();
-      login(data.token, remember);
-      onClose();
+      console.log(data);
+      // login(data.token, remember);
+      // onClose();
     } catch (err) {
-      setError("Error logging in");
+      setError("Error signing up");
     }
   };
 
@@ -42,7 +42,6 @@ const SignupModal = ({ onClose, onLogin }) => {
         <h3>Sign Up</h3>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
-          {/* useActionState is used to update state based on the result of a form action. */}
           <input
             className="input"
             type="email"
@@ -56,6 +55,16 @@ const SignupModal = ({ onClose, onLogin }) => {
 
           <input
             className="input"
+            type="username"
+            name="username"
+            placeholder="Your Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+
+          <input
+            className="input"
             type="password"
             name="password"
             placeholder="Your Password"
@@ -64,18 +73,7 @@ const SignupModal = ({ onClose, onLogin }) => {
             required
           />
 
-          <div>
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-              Remember me
-            </label>
-          </div>
-          <button type="submit">Login</button>
+          <button type="submit">Sign up</button>
         </form>
         <button onClick={onClose} className="close-button">
           Close

@@ -4,9 +4,8 @@ import "./App.css";
 import Home from "./components/Home";
 import Post from "./components/Post";
 import Header from "./components/Header";
-import Login from "./components/LoginModal";
-import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
+import ActivateAccount from "./pages/ActivateAccount";
 
 function App() {
   return (
@@ -15,8 +14,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/post/:slug" element={<Post />} />
-        <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/activate/:token" element={<ActivateAccount />} />
       </Routes>
     </Router>
   );

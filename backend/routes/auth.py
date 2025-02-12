@@ -10,8 +10,14 @@ from flask_jwt_extended import (
     jwt_required,
     JWTManager,
 )
+import os
+import secrets
+from flask_mail import Mail, Message
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
 auth_bp = Blueprint("auth", __name__)
+mail = Mail()
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -58,11 +64,82 @@ def signup():
     if User.find_by_email(email):
         return jsonify({"error": "User already exists"}), 400
 
+    activation_token = secrets.token_urlsafe(32)
+
     new_user = User(
-        username=username, email=email, password_hash=generate_password_hash(password)
+        username=username,
+        email=email,
+        password_hash=generate_password_hash(password),
+        is_active=False,
+        activation_token=activation_token,
     )
     new_user.save_to_db()
-    return redirect(url_for("auth_bp.login"))
+
+    activation_link = (
+        f"{current_app.config['FRONTEND_URL']}/activate/{activation_token}"
+    )
+    send_activation_email(email, activation_link)
+
+    return (
+        jsonify(
+            {
+                "message": "Account created. Please check your email to activate your account."
+            }
+        ),
+        201,
+    )
+
+
+def send_activation_email(to_email, activation_link):
+    brevo_api_key = os.getenv("BREVO_API_KEY")
+    if not brevo_api_key:
+        raise ValueError("BREVO_API_KEY not set")
+
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key["api-key"] = brevo_api_key
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+
+    sender = {"name": "Autuma-Decem", "email": os.getenv("MAIL_DEFAULT_SENDER")}
+    subject = "Activate Your Account"
+    html_content = f"""
+    <html>
+    <body>
+        <p>Hi,</p>
+        <p>Thank you for registering. Please click the link below to activate your account:</p>
+        <a href="{activation_link}">Activate Account</a>
+    </body>
+    </html>
+    """
+    to = [{"email": to_email}]
+
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=to, sender=sender, subject=subject, html_content=html_content
+    )
+
+    try:
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        print(f"Email sent successfully: {api_response}")
+    except ApiException as e:
+        print(f"Error sending email: {e}")
+
+
+@auth_bp.route("/activate/<token>", methods=["GET"])
+def activate_account(token):
+    user = User.find_by_activation_token(token)
+
+    if not user:
+        return jsonify({"error": "Invalid or expired token"}), 400
+
+    user.is_active = True
+    user.activation_token = None
+    user.save_to_db()
+
+    return (
+        jsonify({"message": "Account activated successfully. You can now log in."}),
+        200,
+    )
 
 
 @auth_bp.route("/logout")
