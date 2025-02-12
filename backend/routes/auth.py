@@ -1,23 +1,17 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, request, jsonify, current_app
 from models.user import User
-from werkzeug.security import generate_password_hash
-from datetime import datetime, timedelta, timezone
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 from flask_jwt_extended import (
     create_access_token,
-    get_jwt,
-    get_jwt_identity,
     unset_jwt_cookies,
-    jwt_required,
-    JWTManager,
 )
 import os
 import secrets
-from flask_mail import Mail, Message
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
 auth_bp = Blueprint("auth", __name__)
-mail = Mail()
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -70,7 +64,6 @@ def signup():
         username=username,
         email=email,
         password_hash=generate_password_hash(password),
-        is_active=False,
         activation_token=activation_token,
     )
     new_user.save_to_db()
@@ -128,14 +121,12 @@ def send_activation_email(to_email, activation_link):
 @auth_bp.route("/activate/<token>", methods=["GET"])
 def activate_account(token):
     user = User.find_by_activation_token(token)
-
-    if not user:
+    if user is None:
         return jsonify({"error": "Invalid or expired token"}), 400
-
     user.is_active = True
     user.activation_token = None
+    user.activated_at = datetime()
     user.save_to_db()
-
     return (
         jsonify({"message": "Account activated successfully. You can now log in."}),
         200,
